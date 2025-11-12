@@ -285,3 +285,107 @@ Integration Tests:
 	•	Cache + ETag operational and verified via tests
 	•	Email buffer writing on submit; hashed analytics event emitted
 	•	Fallback behavior verified for each dependency (CMS/Discovery/Gating)
+
+
+16) UI Specification (Landing Experience)
+
+16.1 Page Layout & Grid
+	•	Structure (top→bottom): Header (optional, minimal) → Hero → Teaser Grid → Testimonials → Disclaimer/Footer → Exit‑Intent Modal (overlay when eligible).
+	•	Grid & Breakpoints (mobile‑first):
+	•	xs/sm (<640px): single column, 16px side padding, max container 100%.
+	•	md (≥768px): 2‑column options in sections, 24px side padding, max container 720–768px.
+	•	lg (≥1024px): 12‑col grid, 32px side padding, max container 960–1040px.
+	•	xl (≥1280px): max container 1140–1200px.
+	•	Spacing scale: 8px baseline; vertical rhythm ~24–40px between sections.
+	•	Safe areas: Ensure top/bottom padding ≥48px on Hero for mobile.
+
+16.2 Visual Hierarchy & Typography
+	•	Hero H1: 36–44px desktop / 24–28px mobile (semantically <h1>). Max ~70 characters.
+	•	Subheadline: 18–20px desktop / 14–16px mobile. Max ~120 characters.
+	•	Body copy: 16px base; line‑height 1.5–1.7.
+	•	CTAs: Primary (filled) vs Secondary (outline). Maintain visual contrast and clear focus states.
+	•	Typography family: System stack or brand sans; keep fallback list. Avoid exotic webfonts for MVP.
+
+16.3 Color & Contrast (AA‑ready)
+	•	Primary: Accessible dark (e.g., near‑black) for text on light backgrounds.
+	•	Accent: One brand accent for CTAs and progress bars.
+	•	Backgrounds: Hero may use image + subtle gradient overlay to preserve contrast.
+	•	Contrast targets: 4.5:1 for text/body; 3:1 for large text and UI elements.
+
+16.4 Components (Functional + Visual Specs)
+
+Header (optional, minimal)
+	•	Left: Logo (alt text). Right: “Browse Startups” link and/or “Join the Community.” Sticky header not required for MVP.
+
+Hero
+	•	Content: Headline, Subheadline, Primary CTA (Join), Secondary CTA (Browse).
+	•	Background: Solid or photo with gradient overlay; maintain text contrast.
+	•	CTA semantics: Buttons are <button> or <a role="button"> with clear aria-label.
+	•	Copy limits: Headline ≤70 chars; Subheadline ≤120 chars; CTA labels ≤20 chars.
+
+Email Join (Inline or Modal)
+	•	Fields: Email (required). Optional hidden honeypot field for bot mitigation.
+	•	Validation: RFC‑compliant email; inline error text; disable submit until valid.
+	•	Feedback: Success toast/inline note: “Thanks! Check your inbox soon.”
+	•	Attribution: Capture UTM (utm_source, utm_medium, utm_campaign) and referrer_url from page context.
+
+Teaser Grid
+	•	Content per card: Logo (optional), Name, Tagline, Percent funded, (Raised/Goal) optional, Progress bar.
+	•	Layout:
+	•	xs/sm: 1‑col; md: 2‑col; lg+: 3‑col.
+	•	Mask‑after‑N rule: First N (default 2) cards fully visible; remaining tiles display blur/overlay with lock icon and microcopy: “Join the community to unlock more startups.”
+	•	Card actions: No click for masked cards (cursor disabled); visible cards may link to details.
+
+Testimonials
+	•	Layout: xs/sm 1‑col, md+ 2‑col. Each blockquote includes quote, author name, optional title, optional avatar.
+	•	Copy limits: Quote ≤140 chars; author name ≤30; title ≤40.
+
+Exit‑Intent Modal
+	•	Trigger: On exit intent only if Gating allows; one display per session unless Gating says otherwise.
+	•	Structure: Headline, short body, single primary CTA “Join the Community,” optional image.
+	•	Dismiss: Close icon + Esc key + backdrop click. Remember dismissal in session (do not reshow during same session).
+	•	A11y: Modal is role="dialog" with aria-modal="true", labelled by headline id; focus trapped inside; return focus to opener on close.
+
+Footer / Disclaimer
+	•	Render disclaimers_html from CMS (sanitized). Include links to policies if provided.
+
+16.5 Interaction & States
+	•	Loading: Use lightweight skeletons for Hero text and 3 teaser tiles (<300ms shimmer). Avoid spinners for main content.
+	•	Empty/Degraded states:
+	•	CMS unavailable → Show minimal fallback copy: headline + join CTA; suppress testimonials/teaser.
+	•	Discovery unavailable → Hide teaser section; do not break layout.
+	•	Validation errors: Red inline text under email field; form remains visible.
+	•	Success state: Replace form with “Thanks” message or show toast and keep form for new submissions (decision up to PM).
+	•	CTA mapping: All CTA clicks add data-analytics attributes (placement, label) for event capture.
+
+16.6 Accessibility
+	•	Semantic headings (<h1> in Hero, subsequent sections use <h2>/<h3>).
+	•	Keyboard navigation: all interactive elements are tabbable; clear focus outline; skip link to main content.
+	•	Modal: focus trap, Esc to close, backdrop click closes, aria-live for success/error messages.
+	•	Images: alt text; decorative images alt="".
+
+16.7 Performance & SEO
+	•	Performance budgets:
+	•	Above‑the‑fold HTML < 20KB; critical CSS minimal; hero image ≤ 150KB on mobile (responsive srcset).
+	•	LCP target < 2.5s on 3G Fast; CLS < 0.1; TBT < 200ms.
+	•	Images: Lazy‑load non‑critical images; explicit width/height to prevent layout shifts.
+	•	SEO: Single H1; descriptive meta title/description (from CMS if supported); social share image (optional).
+
+16.8 Copy Guidelines (Voice & Tone)
+	•	Voice: Community‑first, inclusive, specific to Southeast Asian founders/backers.
+	•	Tone: Warm, encouraging, credible. Avoid hype.
+	•	CTA language: Clear action verbs (“Join the Community”, “Browse Startups”).
+
+16.9 Analytics Mapping (UI → Events)
+	•	Impression: Fire once on first render of landing page per session.
+	•	CTA clicks: Include placement (e.g., hero.primary, hero.secondary, exit_intent).
+	•	Exit‑intent shown: Emit when modal enters the DOM.
+	•	Join submit: Emit after successful POST; include source (hero | exit_intent | footer).
+
+16.10 QA Checklist (Visual/UX)
+	•	Responsive rendering across xs/sm/md/lg/xl; no overflow.
+	•	Mask‑after‑N correctly applies and prevents interaction on masked tiles.
+	•	Exit‑intent appears only when eligible and is dismissible via all methods (X, Esc, backdrop).
+	•	Email validation and error messages behave as specified; success message visible.
+	•	Contrast ratios meet AA; focus states visible; keyboard‑only flow works.
+	•	Degraded modes do not break layout; analytics events still fire where applicable.
