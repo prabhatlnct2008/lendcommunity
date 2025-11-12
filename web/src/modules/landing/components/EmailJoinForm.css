@@ -1,0 +1,84 @@
+.email-join-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.email-join-form__field {
+  position: relative;
+  margin-bottom: var(--spacing-2);
+}
+
+.email-join-form__input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border: 2px solid var(--color-border);
+  border-radius: 0.5rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: border-color 0.15s ease-in-out;
+}
+
+.email-join-form__input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.email-join-form__input--error {
+  border-color: var(--color-error);
+}
+
+.email-join-form__input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Honeypot field - hidden from users */
+.email-join-form__honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.email-join-form__error {
+  color: var(--color-error);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  margin-bottom: var(--spacing-2);
+}
+
+.email-join-form__success {
+  text-align: center;
+  padding: var(--spacing-3);
+  background-color: rgba(16, 185, 129, 0.1);
+  border-radius: 0.5rem;
+  color: var(--color-success);
+}
+
+.email-join-form__success-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--spacing-2);
+}
+
+.email-join-form__success-text {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Visually hidden but accessible to screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

@@ -79,7 +79,7 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-5. Run the application:
+5. Run the **backend** application:
 ```bash
 python -m app.main
 ```
@@ -91,11 +91,32 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 The API will be available at: http://localhost:8000
 
+6. Run the **frontend** application (in a new terminal):
+```bash
+cd web
+npm install
+npm run dev
+```
+
+The web app will be available at: http://localhost:3000
+
 ## API Documentation
 
-Once running, visit:
+Once the backend is running, visit:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
+
+## Frontend
+
+The React frontend is located in the `/web` directory. See [web/README.md](web/README.md) for detailed frontend documentation.
+
+**Features:**
+- Responsive landing page with Hero, Teaser Grid, and Testimonials
+- Email capture form with validation and UTM tracking
+- Exit-intent modal with gating support
+- Full accessibility (WCAG AA compliant)
+- Mobile-first responsive design
+- Analytics event tracking
 
 ### Landing Module Endpoints
 
