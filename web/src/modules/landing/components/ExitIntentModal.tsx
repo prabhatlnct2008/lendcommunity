@@ -54,7 +54,7 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentElement) {
+    if (e.target === e.currentTarget) {
       onClose();
     }
   };
