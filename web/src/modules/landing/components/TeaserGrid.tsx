@@ -21,13 +21,10 @@ export const TeaserGrid: React.FC<TeaserGridProps> = ({ teaser, onUnlockClick })
     }).format(cents / 100);
   };
 
+  const maskedCount = teaser.items.length - teaser.mask_after;
+
   return (
     <section className="teaser-grid" aria-labelledby="teaser-title">
-      {teaser.title && (
-        <h2 id="teaser-title" className="teaser-grid__title">
-          {teaser.title}
-        </h2>
-      )}
       <div className="teaser-grid__items">
         {teaser.items.map((item, index) => {
           const isMasked = index >= teaser.mask_after;
@@ -42,7 +39,7 @@ export const TeaserGrid: React.FC<TeaserGridProps> = ({ teaser, onUnlockClick })
                 <button
                   className="teaser-card__mask"
                   onClick={onUnlockClick}
-                  aria-label="Unlock more startups"
+                  aria-label="Join to view more startups"
                 >
                   <svg
                     className="teaser-card__lock-icon"
@@ -57,11 +54,11 @@ export const TeaserGrid: React.FC<TeaserGridProps> = ({ teaser, onUnlockClick })
                       d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                     />
                   </svg>
-                  <p className="teaser-card__mask-text">
-                    Unlock More Startups
+                  <p className="teaser-card__mask-title">
+                    Join to view more
                   </p>
-                  <p className="teaser-card__mask-cta">
-                    Join Free →
+                  <p className="teaser-card__mask-subtitle">
+                    Discover {maskedCount} more amazing startups
                   </p>
                 </button>
               )}
@@ -115,6 +112,15 @@ export const TeaserGrid: React.FC<TeaserGridProps> = ({ teaser, onUnlockClick })
             </div>
           );
         })}
+      </div>
+
+      <div className="teaser-grid__cta">
+        <button
+          className="teaser-grid__view-all"
+          onClick={onUnlockClick}
+        >
+          View All Startups →
+        </button>
       </div>
     </section>
   );

@@ -5,9 +5,10 @@ import './EmailJoinForm.css';
 interface EmailJoinFormProps {
   onSubmit: (email: string) => Promise<void>;
   source?: 'hero' | 'exit_intent' | 'footer';
+  inline?: boolean;
 }
 
-export const EmailJoinForm: React.FC<EmailJoinFormProps> = ({ onSubmit, source = 'hero' }) => {
+export const EmailJoinForm: React.FC<EmailJoinFormProps> = ({ onSubmit, source = 'hero', inline = false }) => {
   const [email, setEmail] = useState('');
   const [honeypot, setHoneypot] = useState(''); // Bot detection
   const [error, setError] = useState('');
@@ -67,7 +68,7 @@ export const EmailJoinForm: React.FC<EmailJoinFormProps> = ({ onSubmit, source =
   }
 
   return (
-    <form className="email-join-form" onSubmit={handleSubmit} id="email-join">
+    <form className={`email-join-form ${inline ? 'email-join-form--inline' : ''}`} onSubmit={handleSubmit} id="email-join">
       <div className="email-join-form__field">
         <label htmlFor={`email-${source}`} className="visually-hidden">
           Email address
@@ -109,7 +110,7 @@ export const EmailJoinForm: React.FC<EmailJoinFormProps> = ({ onSubmit, source =
         variant="primary"
         disabled={isSubmitting || !email}
       >
-        {isSubmitting ? 'Joining...' : 'Join the Community'}
+        {isSubmitting ? 'Joining...' : 'Join Community'}
       </Button>
     </form>
   );

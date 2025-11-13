@@ -1,23 +1,47 @@
 import React from 'react';
-import { Button } from './Button';
 import './Footer.css';
 
 interface FooterProps {
-  onJoinClick: () => void;
+  onJoinClick?: () => void;
   disclaimersHtml?: string;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onJoinClick, disclaimersHtml }) => {
   return (
     <footer className="footer" role="contentinfo">
-      <div className="footer__cta-section">
-        <h2 className="footer__cta-title">Ready to Support Local Entrepreneurs?</h2>
-        <p className="footer__cta-subtitle">
-          Join our community of investors making a difference in Virginia
-        </p>
-        <Button onClick={onJoinClick} variant="primary" className="footer__cta-button">
-          Join the Community
-        </Button>
+      <div className="footer__container">
+        <div className="footer__brand">
+          <div className="footer__logo">
+            <div className="footer__logo-icon">❤️</div>
+            <div className="footer__logo-text">
+              <strong>LendCommunity</strong>
+              <span>Fund Local Dreams</span>
+            </div>
+          </div>
+          <p className="footer__tagline">
+            Empowering Southeast Asian entrepreneurs in Virginia through community-driven crowdfunding.
+          </p>
+        </div>
+
+        <div className="footer__links">
+          <div className="footer__column">
+            <h3 className="footer__column-title">Platform</h3>
+            <ul className="footer__link-list">
+              <li><a href="/browse" className="footer__link">Browse Startups</a></li>
+              <li><a href="/launch" className="footer__link">Launch Your Startup</a></li>
+              <li><a href="/how-it-works" className="footer__link">How It Works</a></li>
+            </ul>
+          </div>
+
+          <div className="footer__column">
+            <h3 className="footer__column-title">Community</h3>
+            <ul className="footer__link-list">
+              <li><a href="/about" className="footer__link">About Us</a></li>
+              <li><a href="/stories" className="footer__link">Success Stories</a></li>
+              <li><a href="/contact" className="footer__link">Contact</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       {disclaimersHtml && (
@@ -28,13 +52,8 @@ export const Footer: React.FC<FooterProps> = ({ onJoinClick, disclaimersHtml }) 
 
       <div className="footer__bottom">
         <p className="footer__copyright">
-          © {new Date().getFullYear()} LendCommunity. All rights reserved.
+          © {new Date().getFullYear()} LendCommunity. Built with ❤️ for Southeast Asian entrepreneurs.
         </p>
-        <div className="footer__links">
-          <a href="/privacy" className="footer__link">Privacy Policy</a>
-          <a href="/terms" className="footer__link">Terms of Service</a>
-          <a href="/contact" className="footer__link">Contact</a>
-        </div>
       </div>
     </footer>
   );

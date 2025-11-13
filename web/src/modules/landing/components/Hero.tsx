@@ -28,75 +28,75 @@ export const Hero: React.FC<HeroProps> = ({
   return (
     <section
       className="hero"
-      style={hero.bg_image_url ? { backgroundImage: `url(${hero.bg_image_url})` } : undefined}
       aria-labelledby="hero-headline"
     >
       <div className="hero__overlay">
         <div className="hero__content">
           <div className="hero__text">
+            <span className="hero__badge">
+              🤝 Crowdfunding for Our Community
+            </span>
+
             <h1 id="hero-headline" className="hero__headline">
-              {hero.headline}
+              Fund Dreams.
+              <br />
+              <span className="hero__headline--accent">Build Community.</span>
             </h1>
+
             {hero.subheadline && (
               <p className="hero__subheadline">{hero.subheadline}</p>
             )}
 
-            {/* Trust badges */}
-            <div className="hero__trust-badges">
-              <div className="trust-badge">
-                <span className="trust-badge__value">2,100+</span>
-                <span className="trust-badge__label">Community Members</span>
+            {/* Inline email form and buttons */}
+            <div className="hero__actions">
+              <div className="hero__email-inline">
+                <EmailJoinForm
+                  onSubmit={onEmailSubmit}
+                  source="hero"
+                  inline={true}
+                />
               </div>
-              <div className="trust-badge">
-                <span className="trust-badge__value">$4.2M</span>
-                <span className="trust-badge__label">Funded</span>
-              </div>
-              <div className="trust-badge">
-                <span className="trust-badge__value">87</span>
-                <span className="trust-badge__label">Startups Backed</span>
-              </div>
+              {hero.secondary_cta && (
+                <Button
+                  onClick={handleSecondaryCTA}
+                  variant="secondary"
+                  ariaLabel={hero.secondary_cta.label}
+                >
+                  {hero.secondary_cta.label}
+                </Button>
+              )}
             </div>
 
-            {!showInlineForm && (
-              <div className="hero__ctas">
-                <Button
-                  onClick={() => {
-                    onCTAClick('hero.primary', hero.primary_cta.label, hero.primary_cta.action);
-                    document.getElementById('email-join')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  variant="primary"
-                  ariaLabel={hero.primary_cta.label}
-                >
-                  {hero.primary_cta.label}
-                </Button>
-                {hero.secondary_cta && (
-                  <Button
-                    onClick={handleSecondaryCTA}
-                    variant="secondary"
-                    ariaLabel={hero.secondary_cta.label}
-                  >
-                    {hero.secondary_cta.label}
-                  </Button>
-                )}
+            {/* Trust badges with circular avatars */}
+            <div className="hero__trust">
+              <div className="hero__avatars">
+                <div className="avatar"></div>
+                <div className="avatar"></div>
+                <div className="avatar"></div>
+                <div className="avatar"></div>
+                <div className="avatar"></div>
               </div>
-            )}
+              <div className="hero__trust-text">
+                <div className="hero__trust-count">200+ Community Members</div>
+                <div className="hero__trust-label">Supporting local founders</div>
+              </div>
+            </div>
           </div>
 
-          {showInlineForm && (
-            <div className="hero__form-card">
-              <h2 className="hero__form-title">Get Early Access</h2>
-              <p className="hero__form-subtitle">
-                Join 2,100+ investors supporting local entrepreneurs
-              </p>
-              <EmailJoinForm
-                onSubmit={onEmailSubmit}
-                source="hero"
+          {/* Hero visual with stat card */}
+          <div className="hero__visual">
+            <div className="hero__image">
+              <img
+                src={hero.bg_image_url || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800"}
+                alt="Community members collaborating"
               />
-              <p className="hero__form-disclaimer">
-                Free to join. Accredited investors only.
-              </p>
             </div>
-          )}
+            <div className="hero__stat-card">
+              <div className="hero__stat-icon">💰</div>
+              <div className="hero__stat-value">$250K+</div>
+              <div className="hero__stat-label">Funded This Year</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

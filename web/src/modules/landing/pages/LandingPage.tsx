@@ -5,11 +5,10 @@ import { Header } from '@/shared/components/Header';
 import { Container } from '@/shared/components/Container';
 import { Footer } from '@/shared/components/Footer';
 import { Hero } from '../components/Hero';
-import { LogoRail, ImpactMetrics } from '../components/SocialProof';
-import { WhyLendCommunity } from '../components/WhyLendCommunity';
+import { ImpactMetrics } from '../components/SocialProof';
 import { TeaserGrid } from '../components/TeaserGrid';
-import { HowItWorks } from '../components/HowItWorks';
 import { Testimonials } from '../components/Testimonials';
+import { FounderCTA } from '../components/FounderCTA';
 import { ExitIntentModal } from '../components/ExitIntentModal';
 import { useExitIntent } from '@/shared/hooks/useExitIntent';
 import './LandingPage.css';
@@ -54,13 +53,18 @@ const LandingPage: React.FC = () => {
   };
 
   const handleJoinClick = () => {
-    const emailSection = document.getElementById('hero');
-    emailSection?.scrollIntoView({ behavior: 'smooth' });
+    const heroSection = document.getElementById('hero');
+    heroSection?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleUnlockClick = () => {
-    handleCTAClick('teaser_mask', 'Unlock More Startups', 'open_signup');
+    handleCTAClick('teaser_mask', 'Join to view more', 'open_signup');
     setShowExitIntentModal(true);
+  };
+
+  const handleLaunchClick = () => {
+    handleCTAClick('founder_cta', 'Launch Your Campaign', 'launch_campaign');
+    window.location.href = '/launch';
   };
 
   const handleExitIntentCTA = () => {
@@ -117,38 +121,23 @@ const LandingPage: React.FC = () => {
           />
         </section>
 
-        <Container>
-          <LogoRail />
-        </Container>
-
-        <Container>
-          <ImpactMetrics />
-        </Container>
-
-        <Container>
-          <WhyLendCommunity />
-        </Container>
+        <ImpactMetrics />
 
         {landingData.teaser && landingData.teaser.items.length > 0 && (
-          <Container>
-            <TeaserGrid
-              teaser={landingData.teaser}
-              onUnlockClick={handleUnlockClick}
-            />
-          </Container>
+          <TeaserGrid
+            teaser={landingData.teaser}
+            onUnlockClick={handleUnlockClick}
+          />
         )}
-
-        <HowItWorks />
 
         {landingData.testimonials && landingData.testimonials.length > 0 && (
-          <Container>
-            <Testimonials testimonials={landingData.testimonials} />
-          </Container>
+          <Testimonials testimonials={landingData.testimonials} />
         )}
+
+        <FounderCTA onLaunchClick={handleLaunchClick} />
       </main>
 
       <Footer
-        onJoinClick={handleJoinClick}
         disclaimersHtml={landingData.disclaimers_html}
       />
 
@@ -157,6 +146,7 @@ const LandingPage: React.FC = () => {
           exitIntent={landingData.exit_intent}
           onCTAClick={handleExitIntentCTA}
           onClose={() => setShowExitIntentModal(false)}
+          onEmailSubmit={handleEmailSubmit}
         />
       )}
     </div>

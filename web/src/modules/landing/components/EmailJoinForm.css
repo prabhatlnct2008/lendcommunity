@@ -3,6 +3,27 @@
   margin: 0 auto;
 }
 
+/* Inline variant for hero section */
+.email-join-form--inline {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: flex-start;
+  max-width: none;
+  margin: 0;
+}
+
+.email-join-form--inline .email-join-form__field {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.email-join-form--inline .email-join-form__error {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+}
+
 .email-join-form__field {
   position: relative;
   margin-bottom: var(--spacing-2);

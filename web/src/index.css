@@ -9,22 +9,37 @@
 :root {
   /* Colors */
   --color-primary: #1a1a1a;
-  --color-accent: #2563eb;
-  --color-accent-hover: #1d4ed8;
+  --color-accent: #FF6347;
+  --color-accent-hover: #FF4529;
+  --color-accent-gradient: linear-gradient(135deg, #FF6347 0%, #FF1493 100%);
   --color-text: #1a1a1a;
   --color-text-muted: #6b7280;
+  --color-text-light: #ffffff;
   --color-bg: #ffffff;
-  --color-bg-secondary: #f9fafb;
-  --color-bg-gradient: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  --color-bg-secondary: #FFF5F3;
+  --color-bg-beige: #FAF3E0;
+  --color-bg-pink: linear-gradient(180deg, #FFE8E5 0%, #FFF5F3 50%, #FAF3E0 100%);
+  --color-bg-dark: #2a2a2a;
   --color-border: #e5e7eb;
   --color-success: #10b981;
   --color-error: #ef4444;
+
+  /* Metric colors */
+  --color-metric-teal: #14B8A6;
+  --color-metric-orange: #FB923C;
+  --color-metric-blue: #60A5FA;
+  --color-metric-purple: #A78BFA;
+
+  /* Badge colors */
+  --color-badge-bg: #FFE8DD;
+  --color-badge-text: #D97706;
 
   /* Elevation */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
   --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
 
   /* Spacing (8px baseline) */
   --spacing-1: 0.5rem;  /* 8px */
@@ -58,7 +73,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--color-text);
-  background: var(--color-bg-gradient);
+  background: var(--color-bg-pink);
   line-height: var(--line-height-base);
 }
 
