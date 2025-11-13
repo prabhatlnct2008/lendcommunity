@@ -1,17 +1,14 @@
 .teaser-grid {
-  padding: var(--spacing-5) 0;
-}
-
-.teaser-grid__title {
-  font-size: 1.875rem;
-  text-align: center;
-  margin-bottom: var(--spacing-4);
+  padding: var(--spacing-6) var(--spacing-2);
+  background: white;
 }
 
 .teaser-grid__items {
   display: grid;
-  gap: var(--spacing-3);
+  gap: var(--spacing-4);
   grid-template-columns: 1fr;
+  max-width: var(--container-lg);
+  margin: 0 auto var(--spacing-5);
 }
 
 /* md: 2 columns */
@@ -52,8 +49,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(37, 99, 235, 0.95);
-  backdrop-filter: blur(8px);
+  background: rgba(200, 200, 200, 0.9);
+  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -68,29 +65,29 @@
 }
 
 .teaser-card__mask:hover {
-  background: rgba(29, 78, 216, 0.95);
+  background: rgba(180, 180, 180, 0.9);
 }
 
 .teaser-card__lock-icon {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   color: white;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
 }
 
-.teaser-card__mask-text {
+.teaser-card__mask-title {
   color: white;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  max-width: 20ch;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-1);
 }
 
-.teaser-card__mask-cta {
+.teaser-card__mask-subtitle {
   color: white;
   font-size: 0.9375rem;
-  font-weight: 600;
-  opacity: 0.9;
+  font-weight: 500;
+  opacity: 0.95;
+  max-width: 25ch;
 }
 
 .teaser-card__cover {
@@ -158,4 +155,39 @@
 
 .teaser-card__amounts {
   color: var(--color-text-muted);
+}
+
+/* CTA Button */
+.teaser-grid__cta {
+  text-align: center;
+  max-width: var(--container-lg);
+  margin: 0 auto;
+}
+
+.teaser-grid__view-all {
+  background: var(--color-accent-gradient);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.teaser-grid__view-all:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.teaser-grid__view-all:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .teaser-grid__view-all:hover {
+    transform: none;
+  }
 }

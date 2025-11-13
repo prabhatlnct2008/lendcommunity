@@ -1,68 +1,60 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ExitIntentCopyVM } from '../api/types';
-import { Button } from '@/shared/components/Button';
 import './ExitIntentModal.css';
 
 interface ExitIntentModalProps {
   exitIntent: ExitIntentCopyVM;
   onCTAClick: () => void;
   onClose: () => void;
+  onEmailSubmit: (email: string) => Promise<void>;
 }
 
 export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
   exitIntent,
   onCTAClick,
   onClose,
+  onEmailSubmit,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Focus trap
-    const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements?.[0];
-    const lastElement = focusableElements?.[focusableElements.length - 1];
-
-    // Focus close button on mount
     closeButtonRef.current?.focus();
+    document.body.style.overflow = 'hidden';
 
-    // Handle Tab key for focus trap
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
-        return;
-      }
-
-      if (e.key === 'Tab' && focusableElements) {
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement?.focus();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement?.focus();
-          }
-        }
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
-
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
   }, [onClose]);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      await onEmailSubmit(email);
+      onCTAClick();
+      onClose();
+    } catch (error) {
+      console.error('Failed to submit email:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === e.currentElement) {
       onClose();
     }
   };
@@ -82,39 +74,57 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
           onClick={onClose}
           aria-label="Close"
         >
-          <svg viewBox="0 0 20 20" fill="currentColor">
-            <path
-              fillRule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+          ✕ ✨
         </button>
 
-        {exitIntent.image_url && (
-          <div className="exit-intent-modal__image">
-            <img src={exitIntent.image_url} alt="" />
-          </div>
-        )}
+        <div className="exit-intent-modal__icon">
+          <div className="exit-intent-modal__icon-inner">!</div>
+        </div>
 
-        <div className="exit-intent-modal__content">
-          <h2 id="exit-intent-headline" className="exit-intent-modal__headline">
-            {exitIntent.headline}
-          </h2>
+        <h2 id="exit-intent-headline" className="exit-intent-modal__headline">
+          Wait! Don't Miss Out 🚀
+        </h2>
 
-          {exitIntent.body && (
-            <p className="exit-intent-modal__body">{exitIntent.body}</p>
-          )}
+        <p className="exit-intent-modal__body">
+          Join our community to discover amazing startups and get exclusive updates on new campaigns!
+        </p>
 
-          <Button
-            onClick={() => {
-              onCTAClick();
-              onClose();
-            }}
-            variant="primary"
+        <form onSubmit={handleSubmit} className="exit-intent-modal__form">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            className="exit-intent-modal__input"
+            required
+          />
+
+          <button
+            type="submit"
+            className="exit-intent-modal__cta"
+            disabled={isSubmitting}
           >
-            {exitIntent.cta_label}
-          </Button>
+            {isSubmitting ? 'Submitting...' : 'Yes, Keep Me Updated!'}
+          </button>
+        </form>
+
+        <button className="exit-intent-modal__skip" onClick={onClose}>
+          No thanks, I'll browse without updates
+        </button>
+
+        <div className="exit-intent-modal__stats">
+          <div className="exit-intent-modal__stat">
+            <div className="exit-intent-modal__stat-value">50+</div>
+            <div className="exit-intent-modal__stat-label">Active Campaigns</div>
+          </div>
+          <div className="exit-intent-modal__stat">
+            <div className="exit-intent-modal__stat-value">$250K+</div>
+            <div className="exit-intent-modal__stat-label">Funded</div>
+          </div>
+          <div className="exit-intent-modal__stat">
+            <div className="exit-intent-modal__stat-value">85%</div>
+            <div className="exit-intent-modal__stat-label">Success Rate</div>
+          </div>
         </div>
       </div>
     </div>
