@@ -26,48 +26,50 @@
 
 .impact-metric {
   background: white;
-  padding: var(--spacing-4);
-  border-radius: 1rem;
+  padding: var(--spacing-5);
+  border-radius: 1.25rem;
   text-align: center;
-  box-shadow: var(--shadow-card);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .impact-metric:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
 }
 
 .impact-metric__icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto var(--spacing-2);
-  border-radius: 1rem;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto var(--spacing-3);
+  border-radius: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 2.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .impact-metric__icon--teal {
-  background: var(--color-metric-teal);
+  background: linear-gradient(135deg, #00BFA5 0%, #00897B 100%);
 }
 
 .impact-metric__icon--orange {
-  background: var(--color-metric-orange);
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
 }
 
 .impact-metric__icon--blue {
-  background: var(--color-metric-blue);
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
 }
 
 .impact-metric__icon--purple {
-  background: var(--color-metric-purple);
+  background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
 }
 
 .impact-metric__value {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 800;
   color: var(--color-text);
   margin-bottom: 0.5rem;
   line-height: 1;
