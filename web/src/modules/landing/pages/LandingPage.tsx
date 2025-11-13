@@ -38,9 +38,14 @@ const LandingPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Show exit intent modal when trigger fires AND gating allows
-    if (showExitIntentTrigger && landingData?.exit_intent?.can_show_now) {
-      setShowExitIntentModal(true);
+    // Show exit intent modal when trigger fires
+    // We check can_show_now if it exists, otherwise default to true
+    if (showExitIntentTrigger && landingData?.exit_intent) {
+      const canShow = landingData.exit_intent.can_show_now ?? true;
+      console.log('Exit intent triggered, can_show_now:', canShow);
+      if (canShow) {
+        setShowExitIntentModal(true);
+      }
     }
   }, [showExitIntentTrigger, landingData]);
 
