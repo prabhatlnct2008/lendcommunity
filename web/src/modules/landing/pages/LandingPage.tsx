@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { landingAPI } from '../api/client';
 import type { LandingPageVM } from '../api/types';
+import { Header } from '@/shared/components/Header';
 import { Container } from '@/shared/components/Container';
+import { Footer } from '@/shared/components/Footer';
 import { Hero } from '../components/Hero';
-import { EmailJoinForm } from '../components/EmailJoinForm';
+import { LogoRail, ImpactMetrics } from '../components/SocialProof';
+import { WhyLendCommunity } from '../components/WhyLendCommunity';
 import { TeaserGrid } from '../components/TeaserGrid';
+import { HowItWorks } from '../components/HowItWorks';
 import { Testimonials } from '../components/Testimonials';
 import { ExitIntentModal } from '../components/ExitIntentModal';
 import { useExitIntent } from '@/shared/hooks/useExitIntent';
@@ -49,6 +53,16 @@ const LandingPage: React.FC = () => {
     await landingAPI.submitEmail(email, 'hero');
   };
 
+  const handleJoinClick = () => {
+    const emailSection = document.getElementById('hero');
+    emailSection?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleUnlockClick = () => {
+    handleCTAClick('teaser_mask', 'Unlock More Startups', 'open_signup');
+    setShowExitIntentModal(true);
+  };
+
   const handleExitIntentCTA = () => {
     if (landingData?.exit_intent) {
       landingAPI.trackCTAClick(
@@ -57,9 +71,6 @@ const LandingPage: React.FC = () => {
         landingData.exit_intent.cta_action
       );
     }
-    // Scroll to email form
-    const emailSection = document.getElementById('email-join');
-    emailSection?.scrollIntoView({ behavior: 'smooth' });
   };
 
   if (loading) {
@@ -94,40 +105,52 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="landing-page">
+      <Header onJoinClick={handleJoinClick} />
+
       <main id="main-content">
-        <Hero
-          hero={landingData.hero}
-          onCTAClick={handleCTAClick}
-          onEmailSubmit={handleEmailSubmit}
-        />
+        <section id="hero">
+          <Hero
+            hero={landingData.hero}
+            onCTAClick={handleCTAClick}
+            onEmailSubmit={handleEmailSubmit}
+            showInlineForm={true}
+          />
+        </section>
 
         <Container>
-          <section className="landing-page__join-section">
-            <EmailJoinForm onSubmit={handleEmailSubmit} source="hero" />
-          </section>
+          <LogoRail />
+        </Container>
+
+        <Container>
+          <ImpactMetrics />
+        </Container>
+
+        <Container>
+          <WhyLendCommunity />
         </Container>
 
         {landingData.teaser && landingData.teaser.items.length > 0 && (
           <Container>
-            <TeaserGrid teaser={landingData.teaser} />
+            <TeaserGrid
+              teaser={landingData.teaser}
+              onUnlockClick={handleUnlockClick}
+            />
           </Container>
         )}
 
-        {landingData.testimonials && landingData.testimonials.length > 0 && (
-          <Testimonials testimonials={landingData.testimonials} />
-        )}
+        <HowItWorks />
 
-        {landingData.disclaimers_html && (
+        {landingData.testimonials && landingData.testimonials.length > 0 && (
           <Container>
-            <footer className="landing-page__footer">
-              <div
-                className="landing-page__disclaimers"
-                dangerouslySetInnerHTML={{ __html: landingData.disclaimers_html }}
-              />
-            </footer>
+            <Testimonials testimonials={landingData.testimonials} />
           </Container>
         )}
       </main>
+
+      <Footer
+        onJoinClick={handleJoinClick}
+        disclaimersHtml={landingData.disclaimers_html}
+      />
 
       {showExitIntentModal && landingData.exit_intent && (
         <ExitIntentModal

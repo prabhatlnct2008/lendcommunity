@@ -4,9 +4,10 @@ import './TeaserGrid.css';
 
 interface TeaserGridProps {
   teaser: TeaserSectionVM;
+  onUnlockClick?: () => void;
 }
 
-export const TeaserGrid: React.FC<TeaserGridProps> = ({ teaser }) => {
+export const TeaserGrid: React.FC<TeaserGridProps> = ({ teaser, onUnlockClick }) => {
   if (!teaser.items || teaser.items.length === 0) {
     return null;
   }
@@ -38,7 +39,11 @@ export const TeaserGrid: React.FC<TeaserGridProps> = ({ teaser }) => {
               aria-label={isMasked ? 'Locked startup - join to view' : item.name}
             >
               {isMasked && (
-                <div className="teaser-card__mask" aria-hidden="true">
+                <button
+                  className="teaser-card__mask"
+                  onClick={onUnlockClick}
+                  aria-label="Unlock more startups"
+                >
                   <svg
                     className="teaser-card__lock-icon"
                     fill="none"
@@ -53,9 +58,12 @@ export const TeaserGrid: React.FC<TeaserGridProps> = ({ teaser }) => {
                     />
                   </svg>
                   <p className="teaser-card__mask-text">
-                    Join the community to unlock more startups
+                    Unlock More Startups
                   </p>
-                </div>
+                  <p className="teaser-card__mask-cta">
+                    Join Free →
+                  </p>
+                </button>
               )}
 
               {item.cover_url && (
