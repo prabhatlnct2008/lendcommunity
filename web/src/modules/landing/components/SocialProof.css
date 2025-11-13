@@ -1,0 +1,79 @@
+/* Logo Rail */
+.logo-rail {
+  padding: var(--spacing-4) 0;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.logo-rail__label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.logo-rail__logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+}
+
+.logo-rail__logo {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.logo-rail__logo:hover {
+  opacity: 1;
+}
+
+/* Impact Metrics */
+.impact-metrics {
+  padding: var(--spacing-6) 0;
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-secondary) 100%);
+}
+
+.impact-metrics__title {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: var(--spacing-5);
+  color: var(--color-primary);
+}
+
+.impact-metrics__grid {
+  display: grid;
+  gap: var(--spacing-4);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+  .impact-metrics__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.impact-metric {
+  text-align: center;
+  padding: var(--spacing-3);
+}
+
+.impact-metric__value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1;
+  margin-bottom: var(--spacing-2);
+}
+
+.impact-metric__label {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
