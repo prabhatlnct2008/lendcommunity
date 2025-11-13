@@ -86,10 +86,10 @@ python -m app.main
 
 Or using uvicorn directly:
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
 ```
 
-The API will be available at: http://localhost:8000
+The API will be available at: http://localhost:8080
 
 6. Run the **frontend** application (in a new terminal):
 ```bash
@@ -103,8 +103,8 @@ The web app will be available at: http://localhost:3000
 ## API Documentation
 
 Once the backend is running, visit:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+- **Swagger UI**: http://localhost:8080/docs
+- **ReDoc**: http://localhost:8080/redoc
 
 ## Frontend
 
