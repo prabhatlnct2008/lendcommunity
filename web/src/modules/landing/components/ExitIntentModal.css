@@ -159,6 +159,26 @@
   color: var(--color-text);
 }
 
+.exit-intent-modal__success {
+  background: #f8fff5;
+  border: 1px solid #d1f5c4;
+  border-radius: 0.75rem;
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.exit-intent-modal__success h3 {
+  margin: 0 0 var(--spacing-2);
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+
+.exit-intent-modal__success p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
 .exit-intent-modal__stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

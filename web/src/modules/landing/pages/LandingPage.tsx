@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { landingAPI } from '../api/client';
-import type { ExitIntentCopyVM, LandingPageVM } from '../api/types';
+import type { EmailSource, ExitIntentCopyVM, LandingPageVM } from '../api/types';
 import { Header } from '@/shared/components/Header';
 import { Container } from '@/shared/components/Container';
 import { Footer } from '@/shared/components/Footer';
@@ -18,6 +18,12 @@ const LandingPage: React.FC = () => {
   const [exitIntentData, setExitIntentData] = useState<ExitIntentCopyVM | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [exitIntentCaptured, setExitIntentCaptured] = useState<boolean>(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    return sessionStorage.getItem('exit_intent_captured') === 'true';
+  });
 
   const exitIntentTriggerCount = useExitIntent();
   const [showExitIntentModal, setShowExitIntentModal] = useState(false);
@@ -57,11 +63,14 @@ const LandingPage: React.FC = () => {
   }, [exitIntentData]);
 
   const openExitIntentModal = useCallback(() => {
+    if (exitIntentCaptured) {
+      return;
+    }
     setShowExitIntentModal(true);
-  }, []);
+  }, [exitIntentCaptured]);
 
   useEffect(() => {
-    if (!exitIntentTriggerCount) return;
+    if (!exitIntentTriggerCount || exitIntentCaptured) return;
 
     const fetchAndShow = async () => {
       const data = await ensureExitIntentData();
@@ -73,14 +82,18 @@ const LandingPage: React.FC = () => {
     };
 
     fetchAndShow();
-  }, [exitIntentTriggerCount, ensureExitIntentData, openExitIntentModal]);
+  }, [exitIntentTriggerCount, ensureExitIntentData, openExitIntentModal, exitIntentCaptured]);
 
   const handleCTAClick = (placement: string, label: string, action: string) => {
     landingAPI.trackCTAClick(placement, label, action);
   };
 
-  const handleEmailSubmit = async (email: string) => {
-    await landingAPI.submitEmail(email, 'hero');
+  const handleEmailSubmit = async (email: string, source: EmailSource = 'hero') => {
+    await landingAPI.submitEmail(email, source);
+    if (source === 'exit_intent') {
+      setExitIntentCaptured(true);
+      sessionStorage.setItem('exit_intent_captured', 'true');
+    }
   };
 
   const handleJoinClick = () => {
@@ -90,6 +103,9 @@ const LandingPage: React.FC = () => {
 
   const handleUnlockClick = () => {
     handleCTAClick('teaser_mask', 'Join to view more', 'open_signup');
+    if (exitIntentCaptured) {
+      return;
+    }
     ensureExitIntentData().then((data) => {
       if (data?.can_show_now) {
         openExitIntentModal();

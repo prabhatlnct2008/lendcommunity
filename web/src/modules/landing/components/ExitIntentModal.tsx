@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { ExitIntentCopyVM } from '../api/types';
+import type { ExitIntentCopyVM, EmailSource } from '../api/types';
 import './ExitIntentModal.css';
 
 interface ExitIntentModalProps {
   exitIntent: ExitIntentCopyVM;
   onCTAClick: () => void;
   onClose: () => void;
-  onEmailSubmit: (email: string) => Promise<void>;
+  onEmailSubmit: (email: string, source?: EmailSource) => Promise<void>;
 }
 
 export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
@@ -19,6 +19,7 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
     closeButtonRef.current?.focus();
@@ -43,9 +44,10 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
 
     setIsSubmitting(true);
     try {
-      await onEmailSubmit(email);
+      await onEmailSubmit(email, 'exit_intent');
+      setHasSubmitted(true);
+      setEmail('');
       onCTAClick();
-      onClose();
     } catch (error) {
       console.error('Failed to submit email:', error);
     } finally {
@@ -85,31 +87,40 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
           Wait! Don't Miss Out 🚀
         </h2>
 
-        <p className="exit-intent-modal__body">
-          Join our community to discover amazing startups and get exclusive updates on new campaigns!
-        </p>
+        {hasSubmitted ? (
+          <div className="exit-intent-modal__success" role="status" aria-live="polite">
+            <h3>Thank you!</h3>
+            <p>You're on the list. Look for an email from us soon with community updates.</p>
+          </div>
+        ) : (
+          <>
+            <p className="exit-intent-modal__body">
+              Join our community to discover amazing startups and get exclusive updates on new campaigns!
+            </p>
 
-        <form onSubmit={handleSubmit} className="exit-intent-modal__form">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            className="exit-intent-modal__input"
-            required
-          />
+            <form onSubmit={handleSubmit} className="exit-intent-modal__form">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="exit-intent-modal__input"
+                required
+              />
 
-          <button
-            type="submit"
-            className="exit-intent-modal__cta"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Submitting...' : 'Yes, Keep Me Updated!'}
-          </button>
-        </form>
+              <button
+                type="submit"
+                className="exit-intent-modal__cta"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Submitting...' : 'Yes, Keep Me Updated!'}
+              </button>
+            </form>
+          </>
+        )}
 
         <button className="exit-intent-modal__skip" onClick={onClose}>
-          No thanks, I'll browse without updates
+          {hasSubmitted ? 'Close' : "No thanks, I'll browse without updates"}
         </button>
 
         <div className="exit-intent-modal__stats">
