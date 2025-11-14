@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react';
 
-export function useExitIntent(): boolean {
-  const [showExitIntent, setShowExitIntent] = useState(false);
+export function useExitIntent(): number {
+  const [triggerCount, setTriggerCount] = useState(0);
 
   useEffect(() => {
-    // Check if already shown in this session
-    const hasShown = sessionStorage.getItem('exit_intent_shown');
-    if (hasShown) {
-      return;
-    }
-
     // Minimum time on page before showing (3 seconds)
     const minTimeMs = 3000;
     const startTime = Date.now();
@@ -22,20 +16,12 @@ export function useExitIntent(): boolean {
 
       if (isLeavingTop && isLeavingWindow) {
         const timeOnPage = Date.now() - startTime;
-        console.log('Exit intent detected!', {
-          clientY: e.clientY,
-          timeOnPage,
-          minTime: minTimeMs,
-          relatedTarget: e.relatedTarget,
-        });
 
         if (timeOnPage >= minTimeMs) {
-          console.log('Showing exit intent modal');
-          setShowExitIntent(true);
-          sessionStorage.setItem('exit_intent_shown', 'true');
-          document.removeEventListener('mouseout', handleMouseOut);
+          console.log('Exit intent detected, firing trigger');
+          setTriggerCount((count) => count + 1);
         } else {
-          console.log('Not enough time on page yet');
+          console.log('Exit intent detected too soon, ignoring');
         }
       }
     };
@@ -48,5 +34,5 @@ export function useExitIntent(): boolean {
     };
   }, []);
 
-  return showExitIntent;
+  return triggerCount;
 }

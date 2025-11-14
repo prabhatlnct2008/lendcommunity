@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { landingAPI } from '../api/client';
-import type { LandingPageVM } from '../api/types';
+import type { ExitIntentCopyVM, LandingPageVM } from '../api/types';
 import { Header } from '@/shared/components/Header';
 import { Container } from '@/shared/components/Container';
 import { Footer } from '@/shared/components/Footer';
@@ -15,10 +15,11 @@ import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
   const [landingData, setLandingData] = useState<LandingPageVM | null>(null);
+  const [exitIntentData, setExitIntentData] = useState<ExitIntentCopyVM | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const showExitIntentTrigger = useExitIntent();
+  const exitIntentTriggerCount = useExitIntent();
   const [showExitIntentModal, setShowExitIntentModal] = useState(false);
 
   useEffect(() => {
@@ -26,6 +27,7 @@ const LandingPage: React.FC = () => {
       try {
         const data = await landingAPI.getLandingPage();
         setLandingData(data);
+        setExitIntentData(data.exit_intent ?? null);
       } catch (err) {
         console.error('Error fetching landing page:', err);
         setError('Failed to load page content');
@@ -37,17 +39,41 @@ const LandingPage: React.FC = () => {
     fetchLandingPage();
   }, []);
 
+  const ensureExitIntentData = useCallback(async () => {
+    if (exitIntentData?.can_show_now) {
+      return exitIntentData;
+    }
+
+    try {
+      const latest = await landingAPI.getExitIntent();
+      if (latest) {
+        setExitIntentData(latest);
+      }
+      return latest;
+    } catch (err) {
+      console.error('Error fetching exit intent:', err);
+      return null;
+    }
+  }, [exitIntentData]);
+
+  const openExitIntentModal = useCallback(() => {
+    setShowExitIntentModal(true);
+  }, []);
+
   useEffect(() => {
-    // Show exit intent modal when trigger fires
-    // We check can_show_now if it exists, otherwise default to true
-    if (showExitIntentTrigger && landingData?.exit_intent) {
-      const canShow = landingData.exit_intent.can_show_now ?? true;
+    if (!exitIntentTriggerCount) return;
+
+    const fetchAndShow = async () => {
+      const data = await ensureExitIntentData();
+      const canShow = data?.can_show_now ?? false;
       console.log('Exit intent triggered, can_show_now:', canShow);
       if (canShow) {
-        setShowExitIntentModal(true);
+        openExitIntentModal();
       }
-    }
-  }, [showExitIntentTrigger, landingData]);
+    };
+
+    fetchAndShow();
+  }, [exitIntentTriggerCount, ensureExitIntentData, openExitIntentModal]);
 
   const handleCTAClick = (placement: string, label: string, action: string) => {
     landingAPI.trackCTAClick(placement, label, action);
@@ -64,7 +90,11 @@ const LandingPage: React.FC = () => {
 
   const handleUnlockClick = () => {
     handleCTAClick('teaser_mask', 'Join to view more', 'open_signup');
-    setShowExitIntentModal(true);
+    ensureExitIntentData().then((data) => {
+      if (data?.can_show_now) {
+        openExitIntentModal();
+      }
+    });
   };
 
   const handleLaunchClick = () => {
@@ -73,11 +103,11 @@ const LandingPage: React.FC = () => {
   };
 
   const handleExitIntentCTA = () => {
-    if (landingData?.exit_intent) {
+    if (exitIntentData) {
       landingAPI.trackCTAClick(
         'exit_intent',
-        landingData.exit_intent.cta_label,
-        landingData.exit_intent.cta_action
+        exitIntentData.cta_label,
+        exitIntentData.cta_action
       );
     }
   };
@@ -146,9 +176,9 @@ const LandingPage: React.FC = () => {
         disclaimersHtml={landingData.disclaimers_html}
       />
 
-      {showExitIntentModal && landingData.exit_intent && (
+      {showExitIntentModal && exitIntentData && (
         <ExitIntentModal
-          exitIntent={landingData.exit_intent}
+          exitIntent={exitIntentData}
           onCTAClick={handleExitIntentCTA}
           onClose={() => setShowExitIntentModal(false)}
           onEmailSubmit={handleEmailSubmit}
