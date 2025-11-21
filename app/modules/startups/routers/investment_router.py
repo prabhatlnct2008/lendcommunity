@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
-from app.modules.auth.services.auth_service import get_current_user_from_header
+from app.modules.auth.routers.auth_router import get_current_user_from_header
 from app.modules.auth.domain.models import UserVM
 from ..domain.models import (
     InvestmentRoundCreateVM,
