@@ -13,11 +13,11 @@ CREATE TABLE IF NOT EXISTS startups (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_startups_user_id ON startups(user_id);
-CREATE INDEX idx_startups_profile_status ON startups(profile_status);
+CREATE INDEX IF NOT EXISTS idx_startups_user_id ON startups(user_id);
+CREATE INDEX IF NOT EXISTS idx_startups_profile_status ON startups(profile_status);
 
 -- Trigger to update updated_at
-CREATE TRIGGER update_startups_updated_at
+CREATE TRIGGER IF NOT EXISTS update_startups_updated_at
 AFTER UPDATE ON startups
 BEGIN
     UPDATE startups SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
