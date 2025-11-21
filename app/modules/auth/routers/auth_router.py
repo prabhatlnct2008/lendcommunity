@@ -4,7 +4,7 @@ Auth Router - HTTP Endpoints
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from fastapi.responses import RedirectResponse
 from typing import Optional
-from app.core.db.session import get_db
+from app.core.db import get_db
 from app.modules.auth.services.auth_service import AuthService
 from app.modules.auth.domain.models import (
     AuthTokenVM,
