@@ -19,15 +19,16 @@ class UserRepository:
         auth_provider: str,
         google_id: Optional[str] = None,
         password_hash: Optional[str] = None,
+        role: str = "founder",
     ) -> dict:
         """Create a new user"""
         user_id = str(uuid.uuid4())
         cursor = self.db.execute(
             """
-            INSERT INTO users (id, email, name, auth_provider, google_id, password_hash)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO users (id, email, name, auth_provider, google_id, password_hash, role)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (user_id, email, name, auth_provider, google_id, password_hash),
+            (user_id, email, name, auth_provider, google_id, password_hash, role),
         )
         self.db.commit()
         return self.get_by_id(user_id)

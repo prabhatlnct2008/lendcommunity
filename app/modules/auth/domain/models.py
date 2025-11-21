@@ -13,6 +13,13 @@ class AuthProvider(str, Enum):
     EMAIL = "email"
 
 
+class UserRole(str, Enum):
+    """User role types"""
+    FOUNDER = "founder"
+    ADMIN = "admin"
+    INVESTOR = "investor"
+
+
 # DTOs / View Models
 class UserVM(BaseModel):
     """User view model"""
@@ -20,6 +27,7 @@ class UserVM(BaseModel):
     email: EmailStr
     name: str
     auth_provider: AuthProvider
+    role: UserRole = UserRole.FOUNDER
     created_at: datetime
 
     class Config:
