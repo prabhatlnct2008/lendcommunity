@@ -4,7 +4,6 @@ User Repository
 import uuid
 from typing import Optional
 from datetime import datetime
-from app.core.db.session import get_db
 
 
 class UserRepository:
