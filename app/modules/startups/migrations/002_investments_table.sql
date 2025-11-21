@@ -24,13 +24,13 @@ CREATE TABLE IF NOT EXISTS investments (
     FOREIGN KEY (startup_id) REFERENCES startups(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_investments_startup_id ON investments(startup_id);
-CREATE INDEX idx_investments_status ON investments(status);
-CREATE INDEX idx_investments_start_date ON investments(start_date);
-CREATE INDEX idx_investments_end_date ON investments(end_date);
+CREATE INDEX IF NOT EXISTS idx_investments_startup_id ON investments(startup_id);
+CREATE INDEX IF NOT EXISTS idx_investments_status ON investments(status);
+CREATE INDEX IF NOT EXISTS idx_investments_start_date ON investments(start_date);
+CREATE INDEX IF NOT EXISTS idx_investments_end_date ON investments(end_date);
 
 -- Trigger to update updated_at
-CREATE TRIGGER update_investments_updated_at
+CREATE TRIGGER IF NOT EXISTS update_investments_updated_at
 AFTER UPDATE ON investments
 BEGIN
     UPDATE investments SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
