@@ -11,6 +11,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.core.db import SessionLocal, init_db
+from sqlalchemy import text
 
 
 def seed_demo_data():
@@ -28,50 +29,51 @@ def seed_demo_data():
 
         # Check if demo founder already exists
         existing = db.execute(
-            "SELECT id FROM users WHERE email = 'founder@demo.com'"
+            text("SELECT id FROM users WHERE email = 'founder@demo.com'")
         ).fetchone()
 
         if not existing:
             print("  Creating demo founder account...")
             db.execute(
-                """
+                text("""
                 INSERT INTO users (id, email, name, auth_provider, google_id, password_hash, role)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    demo_founder_id,
-                    "founder@demo.com",
-                    "Demo Founder",
-                    "email",
-                    None,
-                    "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYNv7HQBV6W",  # password: demo123
-                    "founder",
-                ),
+                VALUES (:id, :email, :name, :auth_provider, :google_id, :password_hash, :role)
+                """),
+                {
+                    "id": demo_founder_id,
+                    "email": "founder@demo.com",
+                    "name": "Demo Founder",
+                    "auth_provider": "email",
+                    "google_id": None,
+                    "password_hash": "$2b$12$VcN4rruOBzPio6Owp8JiNOmwdq5bKkDAoyuUU2./LKSlQZO7s0eGe",  # password: password
+                    "role": "founder",
+                },
             )
-            print("    ✓ Demo founder created (email: founder@demo.com, password: demo123)")
+            print("    ✓ Demo founder created (email: founder@demo.com, password: password)")
 
             # Create demo startup
             print("  Creating demo startup...")
             db.execute(
-                """
+                text("""
                 INSERT INTO startups (
                     id, user_id, name, founder_name, email, phone, website,
                     profile_status, created_at, updated_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    demo_startup_id,
-                    demo_founder_id,
-                    "TechStartup Inc.",
-                    "Demo Founder",
-                    "founder@demo.com",
-                    "+1 (555) 123-4567",
-                    "https://techstartup.example.com",
-                    "full_complete",
-                    datetime.utcnow(),
-                    datetime.utcnow(),
-                ),
+                VALUES (:id, :user_id, :name, :founder_name, :email, :phone, :website,
+                    :profile_status, :created_at, :updated_at)
+                """),
+                {
+                    "id": demo_startup_id,
+                    "user_id": demo_founder_id,
+                    "name": "TechStartup Inc.",
+                    "founder_name": "Demo Founder",
+                    "email": "founder@demo.com",
+                    "phone": "+1 (555) 123-4567",
+                    "website": "https://techstartup.example.com",
+                    "profile_status": "full_complete",
+                    "created_at": datetime.utcnow(),
+                    "updated_at": datetime.utcnow(),
+                },
             )
             print("    ✓ Demo startup created (TechStartup Inc.)")
 
@@ -81,7 +83,7 @@ def seed_demo_data():
             end_date = (datetime.utcnow() + timedelta(days=90)).date()
 
             db.execute(
-                """
+                text("""
                 INSERT INTO investments (
                     id, startup_id, total_investment_sought, equity_offered,
                     current_valuation, start_date, end_date, status,
@@ -89,27 +91,31 @@ def seed_demo_data():
                     churn_rate, competitors, pitch_deck_url,
                     created_at, updated_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    demo_investment_id,
-                    demo_startup_id,
-                    250000.0,  # $250K
-                    10.0,      # 10% equity
-                    2500000.0, # $2.5M valuation
-                    start_date,
-                    end_date,
-                    "pending_review",  # Waiting for admin approval
-                    2023,      # Founded in 2023
-                    0,         # Not pre-revenue
-                    15000.0,   # $15K MRR
-                    180000.0,  # $180K ARR
-                    2.5,       # 2.5% churn
-                    "Competitor A, Competitor B",
-                    "https://example.com/pitch.pdf",
-                    datetime.utcnow(),
-                    datetime.utcnow(),
-                ),
+                VALUES (:id, :startup_id, :total_investment_sought, :equity_offered,
+                    :current_valuation, :start_date, :end_date, :status,
+                    :start_year, :is_pre_revenue, :last_month_revenue, :arr,
+                    :churn_rate, :competitors, :pitch_deck_url,
+                    :created_at, :updated_at)
+                """),
+                {
+                    "id": demo_investment_id,
+                    "startup_id": demo_startup_id,
+                    "total_investment_sought": 250000.0,  # $250K
+                    "equity_offered": 10.0,      # 10% equity
+                    "current_valuation": 2500000.0, # $2.5M valuation
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "status": "pending_review",  # Waiting for admin approval
+                    "start_year": 2023,      # Founded in 2023
+                    "is_pre_revenue": 0,         # Not pre-revenue
+                    "last_month_revenue": 15000.0,   # $15K MRR
+                    "arr": 180000.0,  # $180K ARR
+                    "churn_rate": 2.5,       # 2.5% churn
+                    "competitors": "Competitor A, Competitor B",
+                    "pitch_deck_url": "https://example.com/pitch.pdf",
+                    "created_at": datetime.utcnow(),
+                    "updated_at": datetime.utcnow(),
+                },
             )
             print("    ✓ Demo investment round created ($250K for 10% equity, status: pending_review)")
         else:
@@ -118,35 +124,35 @@ def seed_demo_data():
         # Admin Account
         admin_id = str(uuid.uuid4())
         existing_admin = db.execute(
-            "SELECT id FROM users WHERE email = 'admin@lendcommunity.com'"
+            text("SELECT id FROM users WHERE email = 'admin@lendcommunity.com'")
         ).fetchone()
 
         if not existing_admin:
             print("  Creating admin account...")
             db.execute(
-                """
+                text("""
                 INSERT INTO users (id, email, name, auth_provider, google_id, password_hash, role)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    admin_id,
-                    "admin@lendcommunity.com",
-                    "Admin User",
-                    "email",
-                    None,
-                    "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYNv7HQBV6W",  # password: admin123
-                    "admin",
-                ),
+                VALUES (:id, :email, :name, :auth_provider, :google_id, :password_hash, :role)
+                """),
+                {
+                    "id": admin_id,
+                    "email": "admin@lendcommunity.com",
+                    "name": "Admin User",
+                    "auth_provider": "email",
+                    "google_id": None,
+                    "password_hash": "$2b$12$VcN4rruOBzPio6Owp8JiNOmwdq5bKkDAoyuUU2./LKSlQZO7s0eGe",  # password: password
+                    "role": "admin",
+                },
             )
-            print("    ✓ Admin account created (email: admin@lendcommunity.com, password: admin123)")
+            print("    ✓ Admin account created (email: admin@lendcommunity.com, password: password)")
         else:
             print("  ℹ️  Admin account already exists, skipping...")
 
         db.commit()
         print("\n✅ Demo data seeded successfully!")
         print("\n📋 Demo Accounts:")
-        print("   Founder: founder@demo.com / demo123")
-        print("   Admin:   admin@lendcommunity.com / admin123")
+        print("   Founder: founder@demo.com / password")
+        print("   Admin:   admin@lendcommunity.com / password")
         print("\n🚀 You can now test the application with these accounts!")
 
     except Exception as e:

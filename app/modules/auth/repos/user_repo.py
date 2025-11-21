@@ -4,6 +4,7 @@ User Repository
 import uuid
 from typing import Optional
 from datetime import datetime
+from sqlalchemy import text
 
 
 class UserRepository:
@@ -24,10 +25,10 @@ class UserRepository:
         """Create a new user"""
         user_id = str(uuid.uuid4())
         cursor = self.db.execute(
-            """
+            text("""
             INSERT INTO users (id, email, name, auth_provider, google_id, password_hash, role)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
+            """),
             (user_id, email, name, auth_provider, google_id, password_hash, role),
         )
         self.db.commit()
@@ -36,7 +37,7 @@ class UserRepository:
     def get_by_id(self, user_id: str) -> Optional[dict]:
         """Get user by ID"""
         cursor = self.db.execute(
-            "SELECT * FROM users WHERE id = ?",
+            text("SELECT * FROM users WHERE id = ?"),
             (user_id,),
         )
         row = cursor.fetchone()
@@ -47,7 +48,7 @@ class UserRepository:
     def get_by_email(self, email: str) -> Optional[dict]:
         """Get user by email"""
         cursor = self.db.execute(
-            "SELECT * FROM users WHERE email = ?",
+            text("SELECT * FROM users WHERE email = ?"),
             (email,),
         )
         row = cursor.fetchone()
@@ -58,7 +59,7 @@ class UserRepository:
     def get_by_google_id(self, google_id: str) -> Optional[dict]:
         """Get user by Google ID"""
         cursor = self.db.execute(
-            "SELECT * FROM users WHERE google_id = ?",
+            text("SELECT * FROM users WHERE google_id = ?"),
             (google_id,),
         )
         row = cursor.fetchone()
@@ -72,7 +73,7 @@ class UserRepository:
         values = list(kwargs.values()) + [user_id]
 
         self.db.execute(
-            f"UPDATE users SET {set_clause} WHERE id = ?",
+            text(f"UPDATE users SET {set_clause} WHERE id = ?"),
             values,
         )
         self.db.commit()
