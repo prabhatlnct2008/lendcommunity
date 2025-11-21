@@ -9,6 +9,11 @@ from app.core.http import create_app
 from app.core.telemetry import setup_logging, logger
 from app.modules.landing.migrations import run_migrations as run_landing_migrations
 from app.modules.landing.routers import router as landing_router
+from app.modules.auth.migrations import run_migrations as run_auth_migrations
+from app.modules.auth.routers.auth_router import router as auth_router
+from app.modules.startups.migrations import run_migrations as run_startups_migrations
+from app.modules.startups.routers.startup_router import router as startup_router
+from app.modules.startups.routers.investment_router import router as investment_router
 
 
 @asynccontextmanager
@@ -30,6 +35,10 @@ async def lifespan(app: FastAPI):
     try:
         logger.info("Running landing module migrations...")
         run_landing_migrations(db)
+        logger.info("Running auth module migrations...")
+        run_auth_migrations(db)
+        logger.info("Running startups module migrations...")
+        run_startups_migrations(db)
         logger.info("Migrations completed")
     finally:
         db.close()
@@ -54,6 +63,9 @@ def create_application() -> FastAPI:
 
     # Register module routers
     app.include_router(landing_router)
+    app.include_router(auth_router)
+    app.include_router(startup_router)
+    app.include_router(investment_router)
 
     # Root endpoint
     @app.get("/")
