@@ -1,7 +1,6 @@
 """Startups module migrations"""
 import os
 import glob
-from sqlalchemy import text
 
 
 def run_migrations(db):
@@ -12,10 +11,10 @@ def run_migrations(db):
     for migration_file in migration_files:
         with open(migration_file, "r") as f:
             sql = f.read()
-            # Execute each statement separately (SQLite doesn't support multiple statements in one execute)
-            for statement in sql.split(";"):
-                statement = statement.strip()
-                if statement:
-                    db.execute(text(statement))
+
+            # Use raw connection to execute multiple statements
+            # SQLite's executescript() handles triggers and multi-statement SQL correctly
+            connection = db.connection().connection
+            connection.executescript(sql)
 
     db.commit()
