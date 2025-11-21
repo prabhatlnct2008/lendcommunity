@@ -69,8 +69,8 @@ class StartupVM(BaseModel):
 # Investment DTOs
 class InvestmentRoundCreateVM(BaseModel):
     """Create investment round - Step 1"""
-    total_investment_sought: Decimal = Field(gt=0, decimal_places=2)
-    equity_offered: Decimal = Field(gt=0, le=100, decimal_places=2)
+    total_investment_sought: Decimal = Field(gt=0)
+    equity_offered: Decimal = Field(gt=0, le=100)
     duration_days: int = Field(ge=30, le=365)
 
 
@@ -78,9 +78,9 @@ class InvestmentMetricsVM(BaseModel):
     """Investment metrics - Step 2"""
     start_year: int = Field(ge=1900, le=2100)
     is_pre_revenue: bool = False
-    last_month_revenue: Optional[Decimal] = Field(None, ge=0, decimal_places=2)
-    arr: Optional[Decimal] = Field(None, ge=0, decimal_places=2)
-    churn_rate: Optional[Decimal] = Field(None, ge=0, le=100, decimal_places=2)
+    last_month_revenue: Optional[Decimal] = Field(None, ge=0)
+    arr: Optional[Decimal] = Field(None, ge=0)
+    churn_rate: Optional[Decimal] = Field(None, ge=0, le=100)
     competitors: Optional[str] = Field(None, max_length=1000)
     pitch_deck_url: Optional[str] = None
 
@@ -94,7 +94,6 @@ class InvestmentVM(BaseModel):
     current_valuation: Decimal
     start_date: date
     end_date: date
-    investment_raised_till_date: Decimal
     status: InvestmentStatus
     start_year: Optional[int] = None
     is_pre_revenue: Optional[bool] = False
