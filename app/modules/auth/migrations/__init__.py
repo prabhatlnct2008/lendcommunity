@@ -1,6 +1,7 @@
 """Auth module migrations"""
 import os
 import glob
+from sqlalchemy import text
 
 
 def run_migrations(db):
@@ -15,6 +16,6 @@ def run_migrations(db):
             for statement in sql.split(";"):
                 statement = statement.strip()
                 if statement:
-                    db.execute(statement)
+                    db.execute(text(statement))
 
     db.commit()
