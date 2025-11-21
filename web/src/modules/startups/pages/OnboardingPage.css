@@ -1,0 +1,128 @@
+/**
+ * Onboarding Page styles
+ */
+
+.onboarding-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.onboarding-page__container {
+  background: white;
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
+  width: 100%;
+  max-width: 700px;
+}
+
+.onboarding-page__header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.onboarding-page__progress {
+  height: 4px;
+  background: var(--color-background, #f3f4f6);
+  border-radius: 9999px;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.onboarding-page__progress-bar {
+  height: 100%;
+  background: var(--color-primary-gradient);
+  transition: width 0.3s ease;
+}
+
+.onboarding-page__title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.75rem;
+}
+
+.onboarding-page__subtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.onboarding-page__error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.onboarding-page__error-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.onboarding-page__error p {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: #991b1b;
+  margin: 0;
+}
+
+.onboarding-page__form {
+  margin-bottom: 2rem;
+}
+
+.onboarding-page__footer {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+.onboarding-page__step {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.5rem;
+}
+
+.onboarding-page__help {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+  margin: 0;
+}
+
+.onboarding-page__help a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.onboarding-page__help a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .onboarding-page {
+    padding: 1rem;
+  }
+
+  .onboarding-page__container {
+    padding: 2rem 1.5rem;
+  }
+
+  .onboarding-page__title {
+    font-size: 1.5rem;
+  }
+}
