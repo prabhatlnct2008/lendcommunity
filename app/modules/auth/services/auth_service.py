@@ -2,6 +2,7 @@
 Auth Service - Business Logic
 """
 from typing import Optional, Tuple
+import bcrypt
 from app.modules.auth.repos.user_repo import UserRepository
 from app.modules.auth.services.google_oauth_service import GoogleOAuthService, JWTService
 from app.modules.auth.domain.models import UserVM, AuthTokenVM
@@ -15,6 +16,41 @@ class AuthService:
         self.user_repo = UserRepository(db)
         self.google_oauth = GoogleOAuthService()
         self.jwt_service = JWTService()
+
+    def login_with_email(self, email: str, password: str) -> Optional[AuthTokenVM]:
+        """
+        Login with email and password
+        Returns JWT token if successful
+        """
+        # Get user by email
+        user = self.user_repo.get_by_email(email)
+        if not user:
+            return None
+
+        # Verify password
+        if not user.get("password_hash"):
+            return None
+
+        # Check password
+        password_bytes = password.encode('utf-8')
+        password_hash_bytes = user["password_hash"].encode('utf-8')
+
+        if not bcrypt.checkpw(password_bytes, password_hash_bytes):
+            return None
+
+        # Generate JWT token
+        access_token = self.jwt_service.create_access_token(
+            user_id=user["id"],
+            email=user["email"],
+        )
+
+        # Convert to view model
+        user_vm = UserVM(**user)
+        return AuthTokenVM(
+            access_token=access_token,
+            token_type="bearer",
+            user=user_vm,
+        )
 
     def get_google_auth_url(self) -> Tuple[str, str]:
         """Get Google OAuth URL"""

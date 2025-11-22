@@ -10,6 +10,7 @@ from app.modules.auth.domain.models import (
     AuthTokenVM,
     UserVM,
     GoogleAuthCallbackVM,
+    LoginRequestVM,
 )
 
 
@@ -53,6 +54,26 @@ def get_current_user_from_header(
         )
 
     return user
+
+
+@router.post("/login", response_model=AuthTokenVM)
+def login(
+    login_data: LoginRequestVM,
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    """
+    Login with email and password
+    Returns JWT token
+    """
+    result = auth_service.login_with_email(login_data.email, login_data.password)
+
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+        )
+
+    return result
 
 
 @router.get("/google/login")

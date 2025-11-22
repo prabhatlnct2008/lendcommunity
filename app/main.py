@@ -14,6 +14,7 @@ from app.modules.auth.routers.auth_router import router as auth_router
 from app.modules.startups.migrations import run_migrations as run_startups_migrations
 from app.modules.startups.routers.startup_router import router as startup_router
 from app.modules.startups.routers.investment_router import router as investment_router
+from app.modules.admin.routers.admin_router import router as admin_router
 
 
 @asynccontextmanager
@@ -66,6 +67,7 @@ def create_application() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(startup_router)
     app.include_router(investment_router)
+    app.include_router(admin_router)
 
     # Root endpoint
     @app.get("/")

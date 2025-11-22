@@ -7,6 +7,26 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 class AuthAPIClient {
   /**
+   * Login with email and password
+   */
+  async loginWithEmail(email: string, password: string): Promise<AuthToken> {
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to login');
+    }
+
+    return response.json();
+  }
+
+  /**
    * Get Google OAuth login URL
    */
   async getGoogleLoginUrl(): Promise<GoogleAuthResponse> {
