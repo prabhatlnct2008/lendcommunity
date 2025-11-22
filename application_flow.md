@@ -494,3 +494,516 @@ Acceptance Criteria
 	•	Primary CTAs use the coral/orange color.
 	•	Hover / focus states are defined.
 	•	Spacing, typography hierarchy, and icon style match or extend the existing landing’s components.
+
+
+
+Lendcommunity – Investor & Admin Flows
+
+This document defines the Investor and Admin side flows for Lendcommunity, aligned with the styling and UX patterns of the main product (same as founder side). Authentication is via email + password for all roles.
+
+⸻
+
+1. Shared Concepts
+
+1.1 Roles
+	•	Founder – creates startup profile and raises investment rounds (covered in separate doc).
+	•	Investor – browses startup listings, shows interest, optionally subscribes to unlock information and contact details.
+	•	Admin – Lendcommunity internal team; verifies startups, approves campaigns, manages investor interests, subscriptions, and recorded investments.
+
+1.2 Auth Model (Shared)
+	•	All roles use email + password auth.
+	•	User table:
+	•	user_id
+	•	email (unique)
+	•	password_hash
+	•	role (founder, investor, admin)
+	•	Linked tables:
+	•	Startup (for founders)
+	•	Investor (for investors)
+	•	After login, routing is role-based:
+	•	role = founder → Startup Dashboard
+	•	role = investor → Investor Dashboard
+	•	role = admin → Admin Dashboard
+
+⸻
+
+2. Investor Experience
+
+2.1 Entry & Registration
+
+2.1.1 Entry Points
+	•	Main nav: Browse Startups
+	•	Home hero / stats section: secondary CTA: “Invest in local startups”
+	•	Community stories section: buttons such as “Start Investing”
+
+These all funnel to the Investor entry overlay.
+
+2.1.2 Investor Auth Overlay
+	•	If user is not logged in:
+	•	Show modal/page with two tabs: Login and Create Account.
+	•	Login tab
+	•	Email
+	•	Password
+	•	CTA: Login
+	•	Link: Forgot password?
+	•	Create Account tab (investor-specific)
+	•	Full Name (required)
+	•	Email (required)
+	•	Password (required)
+	•	Confirm password (required)
+	•	Hidden field: role = investor
+	•	CTA: Create Investor Account
+	•	On successful signup:
+	•	Create User with role = investor.
+	•	Create linked Investor record (name, email).
+	•	Redirect to Investor Onboarding – Preferences.
+	•	On successful login (role = investor):
+	•	Redirect to Investor Dashboard.
+	•	If user logs in as founder/admin and hits investor entry accidentally:
+	•	Display friendly message and either:
+	•	Offer “Create investor profile using this email” (if allowed), or
+	•	Suggest logging out and signing in as investor.
+
+2.2 Investor Onboarding – Preferences
+
+Route: /investor/onboarding
+
+Purpose: Capture preferences to personalize listings and notifications.
+
+Screen Layout
+	•	Centered card with title: “Tell us what you want to invest in”.
+	•	Fields:
+	•	Investment focus (multi-select chips): e.g. Food & Beverage, Tech, Retail, Health, Other.
+	•	Stage (multi-select): Pre-revenue, Early Revenue, Scale-up.
+	•	Typical check size (radio or select): Under $5K, $5K–$25K, $25K+.
+	•	Geography (dropdown/multi-select): default to local region; allow more.
+	•	CTA: Save & Start Browsing.
+
+Behaviour
+	•	On submit, preferences are stored against Investor record.
+	•	Redirect to Browse Startups.
+
+2.3 Browse Startups
+
+Route: /startups
+
+Purpose: Show all active campaigns in a filterable grid.
+
+Layout
+	•	Top filter bar:
+	•	Search input (by startup name / keywords).
+	•	Filter chips: sectors, stages.
+	•	Toggle: Show pre-revenue only.
+	•	Optional amount range slider (min/max target).
+	•	Startup cards (grid):
+	•	Sector badge (e.g. “Food & Beverage”).
+	•	Startup name.
+	•	One-line description/tagline.
+	•	High-level round info:
+	•	Raising: $X (no equity % if you choose to gate it).
+	•	Days left: N.
+	•	Small lock icon + label: Detailed metrics locked.
+	•	CTA: View Details (primary), bookmark icon for watchlist (optional).
+
+Behaviour
+	•	Only active and approved campaigns are listed.
+	•	No sensitive metrics are shown on cards; details are revealed on the startup detail page with gating.
+
+2.4 Startup Detail – Investor View (Gated)
+
+Route: /startups/:startupId
+
+Purpose: Present a specific startup’s campaign with a clear path to show interest and unlock details.
+
+Layout
+	•	Hero section (two-column):
+	•	Left:
+	•	Startup name + stage badge.
+	•	Short description.
+	•	Round summary: e.g. Raising $50K for 10% equity (you may choose to gate some elements).
+	•	Progress bar: Raised / Target.
+	•	Right:
+	•	Founder avatar (optionally blurred if heavily gated).
+	•	Founder name, title, location.
+	•	Tabs or stacked sections:
+	1.	Overview (always visible)
+	•	Problem & solution summary.
+	•	Market & customer description.
+	•	Team summary (may be partially blurred if desired).
+	2.	Metrics & Financials (gated)
+	•	Cards for Last Month Revenue, ARR, Churn Rate.
+	•	If locked: each card blurred with lock overlay and text, e.g.:
+	•	“Unlock metrics with a subscription or partner intro.”
+	3.	Pitch Deck (gated)
+	•	PDF thumbnail with lock overlay.
+	•	When unlocked, show preview link and download button.
+	•	Right-side sticky Action Panel:
+	•	Primary CTA: I’m Interested.
+	•	Secondary options (if metrics are locked):
+	•	Talk to Lendcommunity Partner
+	•	Unlock with Subscription ($390/month)
+	•	If subscription is active and details unlocked:
+	•	Show founder email, phone, and deck access.
+
+2.5 Mark Interest
+
+Purpose: Allow investors to express interest in a startup and link them to admins/founders.
+
+Flow
+	1.	Investor clicks “I’m Interested”.
+	2.	If not logged in:
+	•	Redirect to login/registration and then back.
+	3.	If logged in as investor:
+	•	Create Interest record:
+	•	interest_id
+	•	investment_id
+	•	investor_id
+	•	status = 'interested'
+	•	is_info_unlocked = false
+	•	created_at
+	•	Increment the startup’s Investor Interest counter.
+	•	Show toast: “We’ve recorded your interest. We’ll notify the founder.”
+	•	Add startup to My Interests list on investor dashboard.
+
+2.6 Request Partner Intro
+
+Purpose: Allow investors to request mediated intros.
+
+Flow
+	1.	From startup detail (action panel), investor clicks “Talk to Lendcommunity Partner”.
+	2.	Modal appears:
+	•	Title: “Request an introduction”.
+	•	Message textarea (optional): “Share any context for the partners.”
+	•	Confirm email (pre-filled, read-only).
+	•	CTA: Send Request.
+	3.	On submit:
+	•	Update Interest.status = 'requested_partner_intro'.
+	•	Notify Admin via admin dashboard / email.
+	•	Show confirmation: “Our partners will review and get back to you.”
+
+2.7 Subscription / Unlock Flow
+
+Purpose: Monetize access to sensitive data and streamline due diligence.
+
+2.7.1 Purchase Subscription
+	1.	Investor clicks “Unlock with Subscription ($390/month)”.
+	2.	Open subscription checkout (Stripe or similar).
+	3.	On successful payment:
+	•	Investor.subscription_status = 'active'.
+	•	subscription_start_date, subscription_renewal_date updated.
+	•	For the investor:
+	•	Metrics & financials become visible according to your rules.
+	•	Pitch decks become accessible.
+	•	Founder contact info becomes visible for startups they have marked interest in.
+
+2.7.2 Visual States
+	•	Locked state: blurred cards, lock icon, CTA to unlock.
+	•	Unlocked state: full metrics, open deck button, visible contact details.
+
+2.8 Investor Dashboard
+
+Route: /dashboard/investor
+
+Purpose: Give investors a control center to track their activities and access.
+
+Top Metrics Row
+
+Cards styled like the public stats section:
+	1.	Startups Viewed – count of unique startup detail pages visited.
+	2.	Startups Interested In – count of active Interest records.
+	3.	Subscription Status – Active / Inactive with CTA “Manage”.
+	4.	(Optional) Total Logged Investments – sum of InvestmentDetails.amount where investor_id matches.
+
+Sections
+	1.	My Interests
+	•	Table/list with:
+	•	Startup name
+	•	Stage
+	•	Raising (target)
+	•	Status:
+	•	interested
+	•	requested_partner_intro
+	•	info_unlocked
+	•	Info lock icon (locked/unlocked).
+	•	Actions: View, Request Intro (if not already), Open Deck (if unlocked).
+	2.	Recommended Startups
+	•	Carousel/grid filtered by preferences.
+	3.	Notifications
+	•	Messages from admins/partners regarding intros and updates.
+
+⸻
+
+3. Admin Experience
+
+Admin users are internal team members with role = 'admin'. They log in via the same email/password auth, but only admins can access /admin routes.
+
+3.1 Admin Login
+	•	Admins use the same login form as all users.
+	•	On successful login, if role = admin, redirect to /admin.
+	•	Non-admins attempting to access /admin/* receive 403/redirect.
+	•	Admin accounts are created internally (no public admin signup).
+
+3.2 Admin Dashboard (Overview)
+
+Route: /admin
+
+Purpose: Give admins a high-level view of platform health and pending tasks.
+
+Top Stats Row
+
+Cards similar to user dashboards:
+	1.	Total Startups – number of startup profiles in system.
+	2.	Active Campaigns – count of Investment with status = 'live'.
+	3.	Total Logged Investments – sum of all InvestmentDetails.amount.
+	4.	Active Investor Subscriptions – count of investors with subscription_status = 'active'.
+
+Sections
+	1.	Pending Items
+	•	Boxes listing counts and quick links:
+	•	Startup profiles pending verification.
+	•	Campaigns pending approval.
+	•	Partner intro requests pending.
+	2.	Recent Activity Feed
+	•	Examples:
+	•	“Investor Jane Doe showed interest in Pho & Beyond.”
+	•	“Campaign ‘XYZ Seed Round’ submitted for approval.”
+	•	“Investment of $10K recorded in ‘ABC Round’.”
+
+3.3 Manage Startups
+
+3.3.1 Startups List
+Route: /admin/startups
+	•	Table:
+	•	Startup name
+	•	Founder name
+	•	Email
+	•	Profile status (basic_complete, pending_review, disabled, etc.)
+	•	Number of campaigns
+	•	Created date
+	•	Actions: View, Disable.
+
+3.3.2 Startup Detail (Admin View)
+	•	Tabs:
+	1.	Profile
+	•	All basic info from founder onboarding.
+	•	Admin-editable fields (except login email).
+	2.	Campaigns
+	•	List of Investment rows with status, raised, goals.
+	3.	Documents
+	•	Uploaded pitch decks & any compliance/KYC docs.
+	4.	Internal Notes
+	•	Text notes visible only to admins (e.g., “High potential but wants flexible terms”).
+	•	Actions:
+	•	Edit Profile (inline form or modal).
+	•	Disable Startup (marks as disabled; hides campaigns from investors).
+
+3.4 Manage Campaigns (Investment Rounds)
+
+3.4.1 Campaigns List
+Route: /admin/campaigns
+	•	Filters: status (draft, pending_review, live, closed, rejected).
+	•	Columns:
+	•	Startup name
+	•	Round identifier (e.g., “Seed Round”) – or InvestmentId if no name.
+	•	Target amount
+	•	Raised so far
+	•	Status
+	•	Created date
+	•	Actions: Review.
+
+3.4.2 Campaign Review & Approval
+Route: /admin/campaigns/:investmentId
+
+View Content
+	•	Round basics:
+	•	Startup name & link
+	•	Target amount, equity offered, implied valuation
+	•	Start & end dates
+	•	Metrics & Pitch:
+	•	Start year
+	•	Pre-revenue flag
+	•	If not pre-revenue: revenue metrics (Last Month Revenue, ARR, Churn)
+	•	Competitors
+	•	Link to pitch deck
+
+Admin Actions
+	•	Approve & Go Live
+	•	Sets Investment.status = 'live'.
+	•	Notifies founder (email + in-app) that campaign is live.
+	•	Reject
+	•	Requires a text reason.
+	•	Sets Investment.status = 'rejected'.
+	•	Sends rejection reason to founder.
+	•	Request Changes
+	•	Admin writes a message describing needed edits.
+	•	Keeps status = 'pending_review'.
+	•	Founder sees the message on their dashboard.
+
+3.5 Manage Investor Interests & Intros
+
+3.5.1 Interests List
+Route: /admin/interests
+	•	Filters:
+	•	Startup
+	•	Investor
+	•	Status (interested, requested_partner_intro, info_unlocked, intro_completed, etc.).
+	•	Columns:
+	•	Startup name
+	•	Investor name
+	•	Status
+	•	Created date
+	•	Last updated
+	•	Actions: Open.
+
+3.5.2 Interest Detail
+Content
+	•	Startup summary:
+	•	Name, sector, stage, link to campaign.
+	•	Investor summary:
+	•	Name, email, preferences.
+	•	Activity timeline for that interest (e.g., expressed interest, requested intro).
+	•	Any message investor included when requesting intro.
+
+Admin Actions
+	•	Add Internal Note – notes saved per interest.
+	•	Mark Intro Scheduled / Mark Intro Completed – status changes.
+	•	Unlock Info for this Investor – sets is_info_unlocked = true and status = 'info_unlocked'.
+
+3.6 Manage Subscriptions
+
+Route: /admin/subscriptions
+
+List View
+	•	Columns:
+	•	Investor name
+	•	Email
+	•	Plan type (e.g., Monthly $390)
+	•	Status (active, cancelled, past_due)
+	•	Start date
+	•	Renewal date
+	•	Actions: View, Update.
+
+Detail View
+	•	Shows subscription history and events.
+	•	Admin can:
+	•	Manually activate/deactivate a subscription (for offline payments or exceptions).
+	•	Adjust renewal date when needed.
+
+3.7 Record Investments (Mediated)
+
+3.7.1 Add Investment Record
+Entry Points
+	•	From campaign detail page: Record Investment button.
+	•	From interest detail page: Convert Interest to Investment button.
+
+Form Fields
+	•	Investor (select; prefilled if coming from interest).
+	•	Campaign / Investment round (prefilled if coming from campaign page).
+	•	Amount invested.
+	•	Date of investment (defaults to today).
+	•	Notes (optional).
+
+Behaviour
+	•	On submit:
+	•	Create InvestmentDetails row:
+	•	investment_details_id
+	•	investment_id
+	•	investor_id
+	•	amount_invested
+	•	date_of_investment
+	•	notes
+	•	Update Investment.investment_raised_till_date += amount_invested.
+	•	If raised amount ≥ target:
+	•	Optionally auto-set Investment.status = 'closed'.
+	•	Notify founder that the goal has been reached.
+
+3.8 Document Templates
+
+Route: /admin/doc-templates
+
+Purpose: Central place to store legal / investment templates.
+
+List View
+	•	Columns:
+	•	Template name (e.g., “Standard Term Sheet”)
+	•	Type (Term Sheet, Subscription Agreement, SAFE, etc.)
+	•	Last updated
+	•	Actions: Upload new version, Download, View.
+
+Behaviour
+	•	Uploading a new version replaces the file but preserves history metadata if needed.
+	•	These templates can be used by admins when facilitating deals offline.
+
+⸻
+
+4. Data Model (Investor & Admin Related)
+
+Below are the main tables needed for investor/admin flows. (Startup/investment core tables are defined in the founder flows doc; repeated here where necessary.)
+
+4.1 Investor
+	•	Investor
+	•	investor_id (PK)
+	•	user_id (FK → User)
+	•	name
+	•	email
+	•	preferences (JSON: sectors, stages, check size, geography)
+	•	subscription_status (none, active, cancelled, past_due)
+	•	subscription_start_date
+	•	subscription_renewal_date
+
+4.2 Interest
+	•	Interest
+	•	interest_id (PK)
+	•	investment_id (FK → Investment)
+	•	investor_id (FK → Investor)
+	•	status (interested, requested_partner_intro, info_unlocked, intro_scheduled, intro_completed, etc.)
+	•	is_info_unlocked (boolean)
+	•	created_at
+	•	updated_at
+	•	notes_internal (text)
+	•	investor_message (text; from intro request modal)
+
+4.3 StartupView (for investor view metrics)
+	•	StartupView
+	•	startup_view_id (PK)
+	•	startup_id (FK → Startup)
+	•	investor_id (FK → Investor)
+	•	viewed_at
+
+Used to compute Investor Views count for founders.
+
+4.4 InvestmentDetails (Recorded Investments)
+	•	InvestmentDetails
+	•	investment_details_id (PK)
+	•	investment_id (FK → Investment)
+	•	investor_id (FK → Investor)
+	•	amount_invested
+	•	date_of_investment
+	•	notes
+
+4.5 DocumentTemplate
+	•	DocumentTemplate
+	•	template_id (PK)
+	•	name
+	•	type
+	•	file_url
+	•	last_updated_at
+	•	last_updated_by (admin user id)
+
+⸻
+
+5. UX & Styling Notes (Investor & Admin)
+	•	Branding: same as main Lendcommunity site.
+	•	Primary color: warm coral/orange (e.g., #FF6A4D).
+	•	Primary gradient: linear-gradient(135deg, #FF7A5C 0%, #FFB87A 100%) for hero backgrounds & badges.
+	•	Background: soft off-white (#FFF7F2).
+	•	Cards: white (#FFFFFF), border radius 16–24px, soft shadow, icon in colored rounded square.
+	•	Typography:
+	•	Headings: Poppins, weight 600/700.
+	•	Body: Inter, weight 400/500.
+	•	Hierarchy similar to existing landing: large H1 (48–56px) for hero, H2 (24–32px) for section titles, 14–16px body text.
+	•	Navigation:
+	•	Main nav (for public & logged-in investors/founders): Home | Browse Startups | For Founders | My Dashboard | Profile/Logout.
+	•	Admin has separate nav within /admin scope: Dashboard | Startups | Campaigns | Interests | Subscriptions | Documents.
+
+This document can now be used as the single source of truth for implementing Investor and Admin flows in Lendcommunity, aligned with founder flows and overall product design.
